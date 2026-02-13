@@ -18,6 +18,7 @@ A web application for cyclists to prepare routes with weather forecasting, POI m
 - **Styling**: Tailwind CSS
 - **ORM**: Prisma 7.x - latest stable version with Rust-free client
 - **Database**: PostgreSQL for both local development and production
+- **File Storage**: Vercel Blob for GPX file storage (keeps database lightweight)
 
 ### Mapping
 - **Map Library**: Leaflet with React-Leaflet
@@ -58,9 +59,11 @@ A web application for cyclists to prepare routes with weather forecasting, POI m
 - Display elevation profile below the map (stretch goal for MVP)
 
 **Technical Notes**:
-- Store original GPX data in database for later retrieval
+- Store original GPX files in Vercel Blob storage; save the blob URL in the database
+- Parse GPX on-the-fly from blob when displaying route details
 - Parse GPX to GeoJSON for Leaflet display
 - Handle both `<trk>` (tracks) and `<rte>` (routes) GPX elements
+- Delete blob when route is deleted
 
 ### Feature 2: Point of Interest (POI) Management
 
@@ -179,32 +182,18 @@ model Route {
   id            String    @id @default(cuid())
   name          String
   description   String?
-  originalGpx   String    // Store original GPX XML
+  gpxBlobUrl    String    // URL to GPX file in Vercel Blob storage
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   // Computed/cached values
   distanceMeters    Float?
   elevationGainM    Float?
-  
+
   // Relations
   pois          POI[]
-  routePoints   RoutePoint[]
   cuePoints     CuePoint[]
   weatherData   WeatherData[]
-}
-
-model RoutePoint {
-  id        String  @id @default(cuid())
-  routeId   String
-  route     Route   @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  
-  sequence  Int     // Order in route
-  lat       Float
-  lon       Float
-  elevation Float?
-  
-  @@index([routeId, sequence])
 }
 
 model POI {
@@ -448,6 +437,9 @@ model WeatherData {
 # Database (PostgreSQL for both local dev and production)
 DATABASE_URL="postgresql://user:password@localhost:5432/cycleroute"
 
+# Vercel Blob storage (required for GPX file storage)
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_xxx"
+
 # Optional: Mapbox (if using instead of OSM)
 NEXT_PUBLIC_MAPBOX_TOKEN="pk.xxx"
 
@@ -487,9 +479,10 @@ npx create-next-app@latest cycleroute --typescript --tailwind --app --src-dir
 # Install dependencies
 npm install prisma@latest @prisma/client@latest
 npm install leaflet react-leaflet @types/leaflet
-npm install @tmcw/togeojson  # GPX parsing
-npm install date-fns         # Date handling
-npm install zod              # Validation
+npm install @vercel/blob       # Blob storage for GPX files
+npm install @tmcw/togeojson    # GPX parsing
+npm install date-fns           # Date handling
+npm install zod                # Validation
 
 # Initialize Prisma with PostgreSQL
 npx prisma init --datasource-provider postgresql
