@@ -127,5 +127,5 @@
 
 /* Contain Leaflet z-index values so they don't overlap dialogs/overlays */
 .leaflet-container {
-  z-index: 0;
+  z-index: 0 !important;
 }
