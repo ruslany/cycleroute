@@ -11,7 +11,7 @@ import {
   useMap,
   useMapEvents,
 } from 'react-leaflet';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { POI_CATEGORY_CONFIG } from '@/lib/poi-categories';
 import type { PoiCategory } from '@/lib/validations/poi';
 
@@ -21,14 +21,43 @@ interface FitBoundsProps {
 
 function FitBounds({ bounds }: FitBoundsProps) {
   const map = useMap();
+  const hasFit = useRef(false);
   useEffect(() => {
-    map.fitBounds(bounds, { padding: [30, 30] });
+    if (!hasFit.current) {
+      map.fitBounds(bounds, { padding: [30, 30] });
+      hasFit.current = true;
+    }
   }, [map, bounds]);
   return null;
 }
 
 interface MapClickHandlerProps {
   onMapClick: (lat: number, lng: number) => void;
+}
+
+function FitRouteControl({ bounds }: FitBoundsProps) {
+  const map = useMap();
+  useEffect(() => {
+    const control = new L.Control({ position: 'topleft' });
+    control.onAdd = () => {
+      const btn = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
+      btn.innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>';
+      btn.title = 'Fit entire route';
+      btn.style.cssText =
+        'width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#333;font-size:18px;';
+      L.DomEvent.disableClickPropagation(btn);
+      btn.addEventListener('click', () => {
+        map.fitBounds(bounds, { padding: [30, 30] });
+      });
+      return btn;
+    };
+    control.addTo(map);
+    return () => {
+      control.remove();
+    };
+  }, [map, bounds]);
+  return null;
 }
 
 function MapClickHandler({ onMapClick }: MapClickHandlerProps) {
@@ -101,6 +130,7 @@ export default function RouteMap({
         />
         <Polyline positions={positions} color="#2563eb" weight={4} />
         <FitBounds bounds={leafletBounds} />
+        <FitRouteControl bounds={leafletBounds} />
         {isAddingPoi && onMapClick && <MapClickHandler onMapClick={onMapClick} />}
         {pois?.map((poi) => {
           const category = poi.category as PoiCategory;
