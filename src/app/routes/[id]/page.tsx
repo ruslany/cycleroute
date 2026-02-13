@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { parseGpx } from '@/lib/gpx';
+import { downloadGpx } from '@/lib/blob';
 import RouteHeader from '@/components/RouteHeader';
 import RouteStats from '@/components/RouteStats';
 import DynamicMap from '@/components/map/DynamicMap';
@@ -13,31 +15,19 @@ export default async function RoutePage({ params }: RoutePageProps) {
 
   const route = await prisma.route.findUnique({
     where: { id },
-    include: {
-      routePoints: {
-        orderBy: { sequence: 'asc' },
-        select: { latitude: true, longitude: true },
-      },
-    },
   });
 
   if (!route) {
     notFound();
   }
 
-  // Compute bounds from points
-  let minLat = Infinity,
-    maxLat = -Infinity,
-    minLon = Infinity,
-    maxLon = -Infinity;
-  for (const p of route.routePoints) {
-    if (p.latitude < minLat) minLat = p.latitude;
-    if (p.latitude > maxLat) maxLat = p.latitude;
-    if (p.longitude < minLon) minLon = p.longitude;
-    if (p.longitude > maxLon) maxLon = p.longitude;
-  }
+  const gpxData = await downloadGpx(route.gpxBlobUrl);
+  const gpxResult = parseGpx(gpxData);
 
-  const bounds = { minLat, maxLat, minLon, maxLon };
+  const trackPoints = gpxResult.trackPoints.map((p) => ({
+    latitude: p.latitude,
+    longitude: p.longitude,
+  }));
 
   return (
     <div className="flex h-screen flex-col">
@@ -49,11 +39,11 @@ export default async function RoutePage({ params }: RoutePageProps) {
           <RouteStats
             distanceMeters={route.distanceMeters}
             elevationGainM={route.elevationGainM}
-            pointCount={route.routePoints.length}
+            pointCount={gpxResult.trackPoints.length}
           />
         </aside>
         <main className="flex-1">
-          <DynamicMap trackPoints={route.routePoints} bounds={bounds} />
+          <DynamicMap trackPoints={trackPoints} bounds={gpxResult.bounds} />
         </main>
       </div>
     </div>
