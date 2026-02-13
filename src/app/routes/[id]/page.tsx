@@ -41,11 +41,11 @@ export default async function RoutePage({ params }: RoutePageProps) {
 
   return (
     <div className="flex h-screen flex-col">
-      <div className="border-b bg-white px-4 py-3">
+      <div className="border-b border-border bg-card px-4 py-3">
         <RouteHeader routeId={route.id} initialName={route.name} />
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-80 shrink-0 overflow-y-auto border-r bg-gray-50 p-4">
+        <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-muted p-4">
           <RouteStats
             distanceMeters={route.distanceMeters}
             elevationGainM={route.elevationGainM}

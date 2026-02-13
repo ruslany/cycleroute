@@ -14,10 +14,10 @@ export default function RouteCard({ id, name, distanceMeters, createdAt }: Route
   return (
     <Link
       href={`/routes/${id}`}
-      className="block rounded-lg bg-white p-4 shadow hover:shadow-md transition-shadow"
+      className="block rounded-lg bg-card p-4 shadow hover:shadow-md transition-shadow"
     >
-      <h3 className="font-semibold text-gray-900">{name}</h3>
-      <div className="mt-1 flex gap-4 text-sm text-gray-500">
+      <h3 className="font-semibold text-card-foreground">{name}</h3>
+      <div className="mt-1 flex gap-4 text-sm text-muted-foreground">
         <span>{distanceKm} km</span>
         <span>{formatDistanceToNow(createdAt, { addSuffix: true })}</span>
       </div>

@@ -31,7 +31,7 @@ export default function RouteHeader({ routeId, initialName }: RouteHeaderProps) 
 
   return (
     <div className="flex items-center gap-4">
-      <Link href="/" className="text-blue-600 hover:text-blue-800">
+      <Link href="/" className="text-primary hover:text-primary/80">
         &larr; Back
       </Link>
       {editing ? (
@@ -40,13 +40,13 @@ export default function RouteHeader({ routeId, initialName }: RouteHeaderProps) 
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded border px-2 py-1 text-lg font-bold"
+            className="rounded border border-input bg-background px-2 py-1 text-lg font-bold"
             autoFocus
           />
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+            className="rounded bg-primary px-3 py-1 text-sm text-primary-foreground hover:bg-primary/90"
           >
             {saving ? 'Saving...' : 'Save'}
           </button>
@@ -55,14 +55,14 @@ export default function RouteHeader({ routeId, initialName }: RouteHeaderProps) 
               setName(initialName);
               setEditing(false);
             }}
-            className="rounded px-3 py-1 text-sm text-gray-600 hover:text-gray-900"
+            className="rounded px-3 py-1 text-sm text-muted-foreground hover:text-foreground"
           >
             Cancel
           </button>
         </div>
       ) : (
         <h1
-          className="cursor-pointer text-2xl font-bold hover:text-blue-600"
+          className="cursor-pointer text-2xl font-bold hover:text-primary"
           onClick={() => setEditing(true)}
           title="Click to edit"
         >
