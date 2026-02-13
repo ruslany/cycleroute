@@ -124,3 +124,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Contain Leaflet z-index values so they don't overlap dialogs/overlays */
+.leaflet-container {
+  z-index: 0;
+}

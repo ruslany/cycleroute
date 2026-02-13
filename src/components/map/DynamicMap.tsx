@@ -1,6 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import type { ComponentProps } from 'react';
+import type RouteMapComponent from './RouteMap';
 
 const RouteMap = dynamic(() => import('./RouteMap'), {
   ssr: false,
@@ -11,4 +13,8 @@ const RouteMap = dynamic(() => import('./RouteMap'), {
   ),
 });
 
-export default RouteMap;
+type DynamicMapProps = ComponentProps<typeof RouteMapComponent>;
+
+export default function DynamicMap(props: DynamicMapProps) {
+  return <RouteMap {...props} />;
+}
