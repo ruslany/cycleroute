@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { parseGpx } from '@/lib/gpx';
+import { uploadGpx } from '@/lib/blob';
 import { createRouteSchema } from '@/lib/validations/route';
-
-const BATCH_SIZE = 13000;
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,33 +16,16 @@ export async function POST(request: NextRequest) {
     const { name, description, gpxData } = parsed.data;
     const gpxResult = parseGpx(gpxData);
 
-    const route = await prisma.$transaction(async (tx) => {
-      const route = await tx.route.create({
-        data: {
-          name: name || gpxResult.name,
-          description,
-          originalGpx: gpxData,
-          distanceMeters: gpxResult.distanceMeters,
-          elevationGainM: gpxResult.elevationGainM,
-        },
-      });
+    const blobUrl = await uploadGpx(`${Date.now()}.gpx`, gpxData);
 
-      // Batch createMany to stay within PostgreSQL parameter limit
-      const points = gpxResult.trackPoints.map((p, i) => ({
-        routeId: route.id,
-        sequence: i,
-        latitude: p.latitude,
-        longitude: p.longitude,
-        elevation: p.elevation,
-      }));
-
-      for (let i = 0; i < points.length; i += BATCH_SIZE) {
-        await tx.routePoint.createMany({
-          data: points.slice(i, i + BATCH_SIZE),
-        });
-      }
-
-      return route;
+    const route = await prisma.route.create({
+      data: {
+        name: name || gpxResult.name,
+        description,
+        gpxBlobUrl: blobUrl,
+        distanceMeters: gpxResult.distanceMeters,
+        elevationGainM: gpxResult.elevationGainM,
+      },
     });
 
     return NextResponse.json(route, { status: 201 });
