@@ -44,7 +44,7 @@ export default function GpxUploader() {
 
   return (
     <div>
-      <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
+      <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90 transition-colors">
         {uploading ? 'Uploading...' : 'Upload GPX'}
         <input
           ref={fileInputRef}
@@ -55,7 +55,7 @@ export default function GpxUploader() {
           className="hidden"
         />
       </label>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
     </div>
   );
 }

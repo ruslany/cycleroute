@@ -1,4 +1,5 @@
 node_modules
 .next
 src/generated
+src/components/ui
 prisma/migrations
