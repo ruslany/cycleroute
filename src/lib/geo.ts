@@ -36,7 +36,8 @@ export function distanceAlongTrack(trackPoints: Point[], point: Point): number {
 
     let fraction = 0;
     if (lenSq > 0) {
-      fraction = ((point.longitude - a.longitude) * dx + (point.latitude - a.latitude) * dy) / lenSq;
+      fraction =
+        ((point.longitude - a.longitude) * dx + (point.latitude - a.latitude) * dy) / lenSq;
       fraction = Math.max(0, Math.min(1, fraction));
     }
 

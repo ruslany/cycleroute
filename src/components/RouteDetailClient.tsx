@@ -42,7 +42,11 @@ export default function RouteDetailClient({
     setIsAddingPoi(false);
   }, []);
 
-  const handleCreatePoi = async (values: { name: string; category: PoiCategory; description: string }) => {
+  const handleCreatePoi = async (values: {
+    name: string;
+    category: PoiCategory;
+    description: string;
+  }) => {
     if (!pendingLocation) return;
 
     const res = await fetch(`/api/routes/${routeId}/pois`, {
@@ -69,7 +73,11 @@ export default function RouteDetailClient({
     setFormOpen(true);
   };
 
-  const handleUpdatePoi = async (values: { name: string; category: PoiCategory; description: string }) => {
+  const handleUpdatePoi = async (values: {
+    name: string;
+    category: PoiCategory;
+    description: string;
+  }) => {
     if (!editingPoi) return;
 
     const res = await fetch(`/api/routes/${routeId}/pois/${editingPoi.id}`, {

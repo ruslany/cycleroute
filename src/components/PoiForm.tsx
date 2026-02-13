@@ -36,7 +36,13 @@ interface PoiFormProps {
   title: string;
 }
 
-export default function PoiForm({ open, onOpenChange, onSubmit, initialValues, title }: PoiFormProps) {
+export default function PoiForm({
+  open,
+  onOpenChange,
+  onSubmit,
+  initialValues,
+  title,
+}: PoiFormProps) {
   const [name, setName] = useState(initialValues?.name ?? '');
   const [category, setCategory] = useState<PoiCategory>(initialValues?.category ?? 'OTHER');
   const [description, setDescription] = useState(initialValues?.description ?? '');

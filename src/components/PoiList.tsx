@@ -57,7 +57,10 @@ export default function PoiList({ pois, trackPoints, onEdit, onDelete }: PoiList
   const poisWithDistance = pois
     .map((poi) => ({
       ...poi,
-      distance: distanceAlongTrack(trackPoints, { latitude: poi.latitude, longitude: poi.longitude }),
+      distance: distanceAlongTrack(trackPoints, {
+        latitude: poi.latitude,
+        longitude: poi.longitude,
+      }),
     }))
     .sort((a, b) => a.distance - b.distance);
 
@@ -82,10 +85,7 @@ export default function PoiList({ pois, trackPoints, onEdit, onDelete }: PoiList
           const distKm = (poi.distance / 1000).toFixed(1);
 
           return (
-            <div
-              key={poi.id}
-              className="flex items-start gap-3 rounded-lg bg-card p-3 shadow-sm"
-            >
+            <div key={poi.id} className="flex items-start gap-3 rounded-lg bg-card p-3 shadow-sm">
               <div className="mt-0.5 shrink-0" style={{ color: config.color }}>
                 <Icon size={18} />
               </div>
@@ -95,9 +95,7 @@ export default function PoiList({ pois, trackPoints, onEdit, onDelete }: PoiList
                   <span className="shrink-0 text-xs text-muted-foreground">{distKm} km</span>
                 </div>
                 {poi.description && (
-                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                    {poi.description}
-                  </p>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{poi.description}</p>
                 )}
               </div>
               <div className="flex shrink-0 gap-1">
