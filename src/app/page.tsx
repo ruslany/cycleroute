@@ -3,6 +3,8 @@ import GpxUploader from '@/components/GpxUploader';
 import RouteCard from '@/components/RouteCard';
 import { ModeToggle } from '@/components/mode-toggle';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const routes = await prisma.route.findMany({
     select: {
