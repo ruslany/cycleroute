@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import "@/lib/leaflet-setup";
-import { MapContainer, TileLayer, Polyline, useMap } from "react-leaflet";
-import { LatLngBoundsExpression, LatLngTuple } from "leaflet";
-import { useEffect } from "react";
+import '@/lib/leaflet-setup';
+import { MapContainer, TileLayer, Polyline, useMap } from 'react-leaflet';
+import { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
+import { useEffect } from 'react';
 
 interface FitBoundsProps {
   bounds: LatLngBoundsExpression;
@@ -28,10 +28,7 @@ interface RouteMapProps {
 }
 
 export default function RouteMap({ trackPoints, bounds }: RouteMapProps) {
-  const positions: LatLngTuple[] = trackPoints.map((p) => [
-    p.latitude,
-    p.longitude,
-  ]);
+  const positions: LatLngTuple[] = trackPoints.map((p) => [p.latitude, p.longitude]);
 
   const leafletBounds: LatLngBoundsExpression = [
     [bounds.minLat, bounds.minLon],
@@ -41,7 +38,7 @@ export default function RouteMap({ trackPoints, bounds }: RouteMapProps) {
   return (
     <MapContainer
       bounds={leafletBounds}
-      style={{ height: "100%", width: "100%" }}
+      style={{ height: '100%', width: '100%' }}
       scrollWheelZoom={true}
     >
       <TileLayer

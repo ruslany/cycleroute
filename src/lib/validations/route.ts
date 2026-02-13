@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createRouteSchema = z.object({
-  name: z.string().min(1, "Name is required").max(255),
+  name: z.string().min(1, 'Name is required').max(255),
   description: z.string().optional(),
-  gpxData: z.string().min(1, "GPX data is required"),
+  gpxData: z.string().min(1, 'GPX data is required'),
 });
 
 export const updateRouteSchema = z.object({

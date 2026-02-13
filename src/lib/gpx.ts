@@ -1,5 +1,5 @@
-import { DOMParser } from "@xmldom/xmldom";
-import * as toGeoJSON from "@tmcw/togeojson";
+import { DOMParser } from '@xmldom/xmldom';
+import * as toGeoJSON from '@tmcw/togeojson';
 
 export interface TrackPoint {
   latitude: number;
@@ -20,12 +20,7 @@ export interface ParsedGpx {
   };
 }
 
-function haversineDistance(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
+function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371000; // Earth radius in meters
   const toRad = (deg: number) => (deg * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
@@ -38,33 +33,31 @@ function haversineDistance(
 
 export function parseGpx(gpxString: string): ParsedGpx {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(gpxString, "application/xml");
+  const doc = parser.parseFromString(gpxString, 'application/xml');
   const geoJson = toGeoJSON.gpx(doc);
 
   // Extract name from GPX metadata or first track
-  const nameEl = doc.getElementsByTagName("name")[0];
-  const name = nameEl?.textContent ?? "Unnamed Route";
+  const nameEl = doc.getElementsByTagName('name')[0];
+  const name = nameEl?.textContent ?? 'Unnamed Route';
 
   // Find the first LineString or MultiLineString feature
   const lineFeature = geoJson.features.find(
-    (f) =>
-      f.geometry.type === "LineString" ||
-      f.geometry.type === "MultiLineString"
+    (f) => f.geometry.type === 'LineString' || f.geometry.type === 'MultiLineString',
   );
 
   if (!lineFeature) {
-    throw new Error("No track found in GPX file");
+    throw new Error('No track found in GPX file');
   }
 
   // Extract coordinates [lon, lat, ele?]
   const geom = lineFeature.geometry;
   let coords: number[][];
-  if (geom.type === "MultiLineString") {
+  if (geom.type === 'MultiLineString') {
     coords = (geom.coordinates as number[][][]).flat();
-  } else if (geom.type === "LineString") {
+  } else if (geom.type === 'LineString') {
     coords = geom.coordinates as number[][];
   } else {
-    throw new Error("Unexpected geometry type");
+    throw new Error('Unexpected geometry type');
   }
 
   const trackPoints: TrackPoint[] = coords.map((c) => ({
@@ -74,7 +67,7 @@ export function parseGpx(gpxString: string): ParsedGpx {
   }));
 
   if (trackPoints.length === 0) {
-    throw new Error("No track points found in GPX file");
+    throw new Error('No track points found in GPX file');
   }
 
   // Compute total distance
@@ -84,7 +77,7 @@ export function parseGpx(gpxString: string): ParsedGpx {
       trackPoints[i - 1].latitude,
       trackPoints[i - 1].longitude,
       trackPoints[i].latitude,
-      trackPoints[i].longitude
+      trackPoints[i].longitude,
     );
   }
 

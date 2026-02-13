@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import GpxUploader from "@/components/GpxUploader";
-import RouteCard from "@/components/RouteCard";
+import { prisma } from '@/lib/prisma';
+import GpxUploader from '@/components/GpxUploader';
+import RouteCard from '@/components/RouteCard';
 
 export default async function Home() {
   const routes = await prisma.route.findMany({
@@ -10,16 +10,14 @@ export default async function Home() {
       distanceMeters: true,
       createdAt: true,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">
-            CycleRoute Planner
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">CycleRoute Planner</h1>
           <GpxUploader />
         </div>
 

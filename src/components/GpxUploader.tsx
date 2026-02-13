@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useRouter } from 'next/navigation';
+import { useState, useRef } from 'react';
 
 export default function GpxUploader() {
   const router = useRouter();
@@ -18,25 +18,25 @@ export default function GpxUploader() {
 
     try {
       const gpxData = await file.text();
-      const res = await fetch("/api/routes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/routes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: file.name.replace(/\.gpx$/i, ""),
+          name: file.name.replace(/\.gpx$/i, ''),
           gpxData,
         }),
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Upload failed");
+        throw new Error(data.error || 'Upload failed');
       }
 
       const route = await res.json();
       router.push(`/routes/${route.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setError(err instanceof Error ? err.message : 'Upload failed');
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } finally {
       setUploading(false);
     }
@@ -45,7 +45,7 @@ export default function GpxUploader() {
   return (
     <div>
       <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-        {uploading ? "Uploading..." : "Upload GPX"}
+        {uploading ? 'Uploading...' : 'Upload GPX'}
         <input
           ref={fileInputRef}
           type="file"

@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
+import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
 
 interface RouteCardProps {
   id: string;
@@ -8,12 +8,7 @@ interface RouteCardProps {
   createdAt: Date;
 }
 
-export default function RouteCard({
-  id,
-  name,
-  distanceMeters,
-  createdAt,
-}: RouteCardProps) {
+export default function RouteCard({ id, name, distanceMeters, createdAt }: RouteCardProps) {
   const distanceKm = (distanceMeters / 1000).toFixed(1);
 
   return (

@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import RouteHeader from "@/components/RouteHeader";
-import RouteStats from "@/components/RouteStats";
-import DynamicMap from "@/components/map/DynamicMap";
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import RouteHeader from '@/components/RouteHeader';
+import RouteStats from '@/components/RouteStats';
+import DynamicMap from '@/components/map/DynamicMap';
 
 interface RoutePageProps {
   params: Promise<{ id: string }>;
@@ -15,7 +15,7 @@ export default async function RoutePage({ params }: RoutePageProps) {
     where: { id },
     include: {
       routePoints: {
-        orderBy: { sequence: "asc" },
+        orderBy: { sequence: 'asc' },
         select: { latitude: true, longitude: true },
       },
     },

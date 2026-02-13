@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { parseGpx } from "@/lib/gpx";
-import { createRouteSchema } from "@/lib/validations/route";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { parseGpx } from '@/lib/gpx';
+import { createRouteSchema } from '@/lib/validations/route';
 
 const BATCH_SIZE = 13000;
 
@@ -11,10 +11,7 @@ export async function POST(request: NextRequest) {
     const parsed = createRouteSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.flatten().fieldErrors },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
     const { name, description, gpxData } = parsed.data;
@@ -51,8 +48,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(route, { status: 201 });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to create route";
+    const message = error instanceof Error ? error.message : 'Failed to create route';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
@@ -69,14 +65,11 @@ export async function GET() {
         createdAt: true,
         updatedAt: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
 
     return NextResponse.json(routes);
   } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch routes" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch routes' }, { status: 500 });
   }
 }

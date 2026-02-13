@@ -20,7 +20,7 @@ export default function RouteStats({
       <div className="rounded-lg bg-white p-4 shadow">
         <p className="text-sm text-gray-500">Elevation Gain</p>
         <p className="text-xl font-semibold">
-          {elevationGainM !== null ? `${Math.round(elevationGainM)} m` : "N/A"}
+          {elevationGainM !== null ? `${Math.round(elevationGainM)} m` : 'N/A'}
         </p>
       </div>
       <div className="rounded-lg bg-white p-4 shadow">

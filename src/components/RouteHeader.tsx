@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
 
 interface RouteHeaderProps {
   routeId: string;
@@ -17,8 +17,8 @@ export default function RouteHeader({ routeId, initialName }: RouteHeaderProps) 
     setSaving(true);
     try {
       const res = await fetch(`/api/routes/${routeId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
       });
       if (res.ok) {
@@ -48,7 +48,7 @@ export default function RouteHeader({ routeId, initialName }: RouteHeaderProps) 
             disabled={saving}
             className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
           >
-            {saving ? "Saving..." : "Save"}
+            {saving ? 'Saving...' : 'Save'}
           </button>
           <button
             onClick={() => {
