@@ -36,6 +36,11 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
   const [time, setTime] = useState('08:00');
   const [speed, setSpeed] = useState(25);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [maxDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return d;
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,10 +80,7 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
                       selected={date}
                       captionLayout="dropdown"
                       defaultMonth={date}
-                      disabled={{
-                        before: new Date(),
-                        after: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-                      }}
+                      disabled={{ before: new Date(), after: maxDate }}
                       onSelect={(d) => {
                         setDate(d);
                         setCalendarOpen(false);
