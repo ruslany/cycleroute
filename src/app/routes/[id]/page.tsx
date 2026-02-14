@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { parseGpx } from '@/lib/gpx';
 import { downloadGpx } from '@/lib/blob';
-import RouteHeader from '@/components/RouteHeader';
-import RouteDetailClient from '@/components/RouteDetailClient';
+import RouteHeader from '@/components/route-header';
+import RouteDetailClient from '@/components/route-detail-client';
 
 interface RoutePageProps {
   params: Promise<{ id: string }>;

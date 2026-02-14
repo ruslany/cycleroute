@@ -2,9 +2,9 @@
 
 import dynamic from 'next/dynamic';
 import type { ComponentProps } from 'react';
-import type RouteMapComponent from './RouteMap';
+import type RouteMapComponent from './route-map';
 
-const RouteMap = dynamic(() => import('./RouteMap'), {
+const RouteMap = dynamic(() => import('./route-map'), {
   ssr: false,
   loading: () => (
     <div className="flex h-full w-full items-center justify-center bg-gray-100">
