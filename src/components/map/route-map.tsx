@@ -14,7 +14,7 @@ import {
 import { useEffect, useRef } from 'react';
 import { POI_CATEGORY_CONFIG } from '@/lib/poi-categories';
 import type { PoiCategory } from '@/lib/validations/poi';
-import WindArrows from '@/components/map/wind-arrows';
+import WindRoute from '@/components/map/wind-route';
 import type { WeatherPanelPoint } from '@/components/weather-panel';
 
 interface FitBoundsProps {
@@ -145,12 +145,15 @@ export default function RouteMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Polyline positions={positions} color="#2563eb" weight={4} />
+        {windArrows && windArrows.length > 0 ? (
+          <WindRoute trackPoints={trackPoints} weatherPoints={windArrows} />
+        ) : (
+          <Polyline positions={positions} color="#2563eb" weight={4} />
+        )}
         <FitBounds bounds={leafletBounds} />
         <FitRouteControl bounds={leafletBounds} />
         <InvalidateOnResize />
         {isAddingPoi && onMapClick && <MapClickHandler onMapClick={onMapClick} />}
-        {windArrows && windArrows.length > 0 && <WindArrows points={windArrows} />}
         {pois?.map((poi) => {
           const category = poi.category as PoiCategory;
           const config = POI_CATEGORY_CONFIG[category] ?? POI_CATEGORY_CONFIG.OTHER;
