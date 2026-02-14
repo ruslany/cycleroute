@@ -170,9 +170,17 @@ interface OpenMeteoHourlyResponse {
 
 async function fetchWithRetry(url: string, retries = 2): Promise<Response> {
   for (let i = 0; i <= retries; i++) {
-    const res = await fetch(url);
-    if (res.ok) return res;
-    if (i < retries) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+      if (res.ok) return res;
+      if (i < retries) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    } catch (err) {
+      if (i < retries) {
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+      } else {
+        throw new Error(`Open-Meteo request failed for ${url}: ${err}`);
+      }
+    }
   }
   throw new Error(`Open-Meteo request failed for ${url}`);
 }
