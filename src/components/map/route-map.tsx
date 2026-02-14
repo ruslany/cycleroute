@@ -33,6 +33,19 @@ function FitBounds({ bounds }: FitBoundsProps) {
   return null;
 }
 
+function InvalidateOnResize() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [map]);
+  return null;
+}
+
 interface MapClickHandlerProps {
   onMapClick: (lat: number, lng: number) => void;
 }
@@ -135,6 +148,7 @@ export default function RouteMap({
         <Polyline positions={positions} color="#2563eb" weight={4} />
         <FitBounds bounds={leafletBounds} />
         <FitRouteControl bounds={leafletBounds} />
+        <InvalidateOnResize />
         {isAddingPoi && onMapClick && <MapClickHandler onMapClick={onMapClick} />}
         {windArrows && windArrows.length > 0 && <WindArrows points={windArrows} />}
         {pois?.map((poi) => {

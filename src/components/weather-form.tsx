@@ -10,8 +10,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Calendar } from '@/components/ui/calendar';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { ChevronDownIcon, Loader2 } from 'lucide-react';
 
 interface WeatherFormProps {
   open: boolean;
@@ -20,26 +24,26 @@ interface WeatherFormProps {
   isLoading: boolean;
 }
 
-function getDefaultStartTime(): string {
+function getDefaultDate(): Date {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(8, 0, 0, 0);
-  // Format as datetime-local value: YYYY-MM-DDTHH:mm
-  const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}T08:00`;
+  return tomorrow;
 }
 
 export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }: WeatherFormProps) {
-  const [startTime, setStartTime] = useState(getDefaultStartTime);
+  const [date, setDate] = useState<Date | undefined>(getDefaultDate);
+  const [time, setTime] = useState('08:00');
   const [speed, setSpeed] = useState(25);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Convert datetime-local to ISO 8601
-    const isoTime = new Date(startTime).toISOString();
-    onSubmit({ startTime: isoTime, averageSpeedKmh: speed });
+    if (!date) return;
+    const [hours, minutes] = time.split(':').map(Number);
+    const combined = new Date(date);
+    combined.setHours(hours, minutes, 0, 0);
+    onSubmit({ startTime: combined.toISOString(), averageSpeedKmh: speed });
   };
 
   return (
@@ -50,14 +54,46 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="weather-start-time">Start Date & Time</Label>
-            <Input
-              id="weather-start-time"
-              type="datetime-local"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              required
-            />
+            <Label>Start Date & Time</Label>
+            <FieldGroup className="flex-row">
+              <Field>
+                <FieldLabel htmlFor="weather-date">Date</FieldLabel>
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      id="weather-date"
+                      className="w-full justify-between font-normal"
+                    >
+                      {date ? format(date, 'PPP') : 'Select date'}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      captionLayout="dropdown"
+                      defaultMonth={date}
+                      onSelect={(d) => {
+                        setDate(d);
+                        setCalendarOpen(false);
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </Field>
+              <Field className="w-32">
+                <FieldLabel htmlFor="weather-time">Time</FieldLabel>
+                <Input
+                  type="time"
+                  id="weather-time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                />
+              </Field>
+            </FieldGroup>
           </div>
           <div className="space-y-2">
             <Label htmlFor="weather-speed">Average Speed (km/h)</Label>
@@ -76,7 +112,7 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || !date}>
               {isLoading ? (
                 <>
                   <Loader2 size={14} className="mr-2 animate-spin" />
