@@ -1,6 +1,6 @@
 import { haversineDistance, type TrackPoint } from '@/lib/gpx';
 
-const SAMPLE_INTERVAL_M = 20000; // ~20km between samples
+const SAMPLE_INTERVAL_M = 10000; // ~10km between samples
 
 export interface SamplePoint {
   latitude: number;
