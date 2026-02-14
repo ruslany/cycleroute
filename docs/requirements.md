@@ -370,20 +370,20 @@ model WeatherData {
 - [ ] Edit/delete POI
 - [ ] POI icons on map
 
-### Phase 3: Route Retracing (Week 2-3)
+### Phase 3: GPX Export (Week 3)
+- [ ] GPX serialization with extensions
+- [ ] Export API endpoint
+- [ ] Download flow
+- [ ] **Test with Wahoo device**
+
+### Phase 4: Route Retracing (Week 4)
 - [ ] OSRM integration
 - [ ] Retrace mode UI
 - [ ] Waypoint placement and routing
 - [ ] Cue sheet extraction and display
 - [ ] Waypoint drag-to-adjust
 
-### Phase 4: GPX Export (Week 3)
-- [ ] GPX serialization with extensions
-- [ ] Export API endpoint
-- [ ] Download flow
-- [ ] **Test with Wahoo device**
-
-### Phase 5: Weather Integration (Week 4)
+### Phase 5: Weather Integration (Week 5)
 - [ ] Open-Meteo integration
 - [ ] Weather data model and caching
 - [ ] Start time picker UI
