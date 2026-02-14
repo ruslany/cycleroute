@@ -376,19 +376,19 @@ model WeatherData {
 - [ ] Download flow
 - [ ] **Test with Wahoo device**
 
-### Phase 4: Route Retracing (Week 4)
-- [ ] OSRM integration
-- [ ] Retrace mode UI
-- [ ] Waypoint placement and routing
-- [ ] Cue sheet extraction and display
-- [ ] Waypoint drag-to-adjust
-
-### Phase 5: Weather Integration (Week 5)
+### Phase 4: Weather Integration (Week 4)
 - [ ] Open-Meteo integration
 - [ ] Weather data model and caching
 - [ ] Start time picker UI
 - [ ] Weather display (timeline/route coloring)
 - [ ] Wind direction relative to travel
+
+### Phase 5: Route Retracing (Week 5)
+- [ ] OSRM integration
+- [ ] Retrace mode UI
+- [ ] Waypoint placement and routing
+- [ ] Cue sheet extraction and display
+- [ ] Waypoint drag-to-adjust
 
 ### Phase 6: Polish & Nice-to-haves
 - [ ] Elevation profile display
