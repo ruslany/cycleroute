@@ -125,10 +125,7 @@ export default function RouteDetailClient({
     }
   };
 
-  const handleFetchWeather = async (values: {
-    startTime: string;
-    averageSpeedKmh: number;
-  }) => {
+  const handleFetchWeather = async (values: { startTime: string; averageSpeedKmh: number }) => {
     setWeatherLoading(true);
     try {
       const res = await fetch(`/api/routes/${routeId}/weather`, {

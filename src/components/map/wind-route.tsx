@@ -43,11 +43,7 @@ interface WindRouteProps {
   weatherPoints: WeatherPanelPoint[];
 }
 
-function ArrowDecorator({
-  positions,
-}: {
-  positions: [number, number][];
-}) {
+function ArrowDecorator({ positions }: { positions: [number, number][] }) {
   const map = useMap();
   const decoratorRef = useRef<L.PolylineDecorator | null>(null);
 

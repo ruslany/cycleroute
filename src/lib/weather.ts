@@ -47,7 +47,7 @@ export function bearing(lat1: number, lon1: number, lat2: number, lon2: number):
 export function classifyWind(travelDeg: number, windFromDeg: number): WindClassification {
   // Wind "from" direction means wind blows FROM that direction.
   // A headwind means wind is coming from the direction you're traveling toward.
-  let relative = ((windFromDeg - travelDeg) % 360 + 360) % 360;
+  let relative = (((windFromDeg - travelDeg) % 360) + 360) % 360;
   if (relative > 180) relative = relative - 360;
 
   const absAngle = Math.abs(relative);
@@ -97,13 +97,23 @@ export function sampleRoutePoints(
   for (let i = 1; i < trackPoints.length; i++) {
     const prev = trackPoints[i - 1];
     const curr = trackPoints[i];
-    const segmentDist = haversineDistance(prev.latitude, prev.longitude, curr.latitude, curr.longitude);
+    const segmentDist = haversineDistance(
+      prev.latitude,
+      prev.longitude,
+      curr.latitude,
+      curr.longitude,
+    );
     cumulativeDistance += segmentDist;
 
     while (cumulativeDistance >= nextSampleDistance && i < trackPoints.length) {
       const arrivalTimeSec = nextSampleDistance / avgSpeedMs;
       const nextIdx = Math.min(i + 1, trackPoints.length - 1);
-      const travelDir = bearing(prev.latitude, prev.longitude, trackPoints[nextIdx].latitude, trackPoints[nextIdx].longitude);
+      const travelDir = bearing(
+        prev.latitude,
+        prev.longitude,
+        trackPoints[nextIdx].latitude,
+        trackPoints[nextIdx].longitude,
+      );
 
       // Interpolate position along segment
       const overshoot = cumulativeDistance - nextSampleDistance;
