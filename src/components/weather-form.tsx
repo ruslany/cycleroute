@@ -75,6 +75,10 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
                       selected={date}
                       captionLayout="dropdown"
                       defaultMonth={date}
+                      disabled={{
+                        before: new Date(),
+                        after: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                      }}
                       onSelect={(d) => {
                         setDate(d);
                         setCalendarOpen(false);

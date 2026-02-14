@@ -3,7 +3,7 @@
 import L from 'leaflet';
 import 'leaflet-polylinedecorator';
 import { Polyline, Popup, CircleMarker, useMap } from 'react-leaflet';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { haversineDistance } from '@/lib/gpx';
 import type { WeatherPanelPoint } from '@/components/weather-panel';
 
@@ -75,6 +75,43 @@ function ArrowDecorator({
       decorator.remove();
     };
   }, [map, positions]);
+
+  return null;
+}
+
+const LEGEND_ITEMS = [
+  { color: '#22c55e', label: 'Tailwind' },
+  { color: '#eab308', label: 'Crosswind' },
+  { color: '#ef4444', label: 'Headwind' },
+];
+
+function WindLegend() {
+  const map = useMap();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const control = new L.Control({ position: 'bottomright' });
+    control.onAdd = () => {
+      const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      div.style.cssText =
+        'background:#fff;color:#333;padding:8px 10px;font-size:12px;line-height:1.6;border-radius:4px;';
+      div.innerHTML =
+        '<div style="font-weight:600;margin-bottom:4px;">Wind</div>' +
+        LEGEND_ITEMS.map(
+          (item) =>
+            `<div style="display:flex;align-items:center;gap:6px;">` +
+            `<span style="width:18px;height:4px;border-radius:2px;background:${item.color};display:inline-block;"></span>` +
+            `<span>${item.label}</span></div>`,
+        ).join('');
+      L.DomEvent.disableClickPropagation(div);
+      containerRef.current = div;
+      return div;
+    };
+    control.addTo(map);
+    return () => {
+      control.remove();
+    };
+  }, [map]);
 
   return null;
 }
@@ -160,12 +197,19 @@ export default function WindRoute({ trackPoints, weatherPoints }: WindRouteProps
         <Polyline key={`ws-${i}`} positions={seg.positions} color={seg.color} weight={4} />
       ))}
       <ArrowDecorator positions={allPositions} />
+      <WindLegend />
       {weatherPoints.map((p, i) => (
         <CircleMarker
           key={`wp-${i}`}
           center={[p.latitude, p.longitude]}
-          radius={6}
-          pathOptions={{ fillOpacity: 0, opacity: 0, fill: false }}
+          radius={5}
+          pathOptions={{
+            fillColor: windColor(p.windClassification.type),
+            fillOpacity: 0.9,
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+          }}
         >
           <Popup>
             <div className="text-sm">
