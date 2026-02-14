@@ -14,6 +14,8 @@ import {
 import { useEffect, useRef } from 'react';
 import { POI_CATEGORY_CONFIG } from '@/lib/poi-categories';
 import type { PoiCategory } from '@/lib/validations/poi';
+import WindArrows from '@/components/map/wind-arrows';
+import type { WeatherPanelPoint } from '@/components/weather-panel';
 
 interface FitBoundsProps {
   bounds: LatLngBoundsExpression;
@@ -100,6 +102,7 @@ interface RouteMapProps {
   isAddingPoi?: boolean;
   onMapClick?: (lat: number, lng: number) => void;
   onPoiClick?: (poi: PoiData) => void;
+  windArrows?: WeatherPanelPoint[];
 }
 
 export default function RouteMap({
@@ -109,6 +112,7 @@ export default function RouteMap({
   isAddingPoi,
   onMapClick,
   onPoiClick,
+  windArrows,
 }: RouteMapProps) {
   const positions: LatLngTuple[] = trackPoints.map((p) => [p.latitude, p.longitude]);
 
@@ -132,6 +136,7 @@ export default function RouteMap({
         <FitBounds bounds={leafletBounds} />
         <FitRouteControl bounds={leafletBounds} />
         {isAddingPoi && onMapClick && <MapClickHandler onMapClick={onMapClick} />}
+        {windArrows && windArrows.length > 0 && <WindArrows points={windArrows} />}
         {pois?.map((poi) => {
           const category = poi.category as PoiCategory;
           const config = POI_CATEGORY_CONFIG[category] ?? POI_CATEGORY_CONFIG.OTHER;

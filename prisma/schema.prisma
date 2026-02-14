@@ -52,18 +52,26 @@ model CuePoint {
 }
 
 model WeatherData {
-  id          String   @id @default(cuid())
-  routeId     String
-  latitude    Float
-  longitude   Float
-  fetchedAt   DateTime @default(now())
-  tempC       Float?
-  windSpeedMs Float?
-  windDeg     Float?
-  description String?
-  icon        String?
+  id                   String   @id @default(cuid())
+  routeId              String
+  latitude             Float
+  longitude            Float
+  distanceFromStartM   Float
+  plannedStartTime     DateTime
+  estimatedArrivalTime DateTime
+  tempC                Float
+  feelsLikeC           Float
+  precipProbability    Float
+  precipMm             Float
+  windSpeedKmh         Float
+  windGustsKmh         Float
+  windDirectionDeg     Int
+  cloudCoverPercent    Float
+  weatherCode          Int
+  travelDirectionDeg   Float
+  fetchedAt            DateTime @default(now())
 
   route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
-  @@index([routeId])
+  @@index([routeId, plannedStartTime])
 }

@@ -27,6 +27,7 @@ export default async function RoutePage({ params }: RoutePageProps) {
   const trackPoints = gpxResult.trackPoints.map((p) => ({
     latitude: p.latitude,
     longitude: p.longitude,
+    elevation: p.elevation,
   }));
 
   const pois = route.pois.map((poi) => ({
