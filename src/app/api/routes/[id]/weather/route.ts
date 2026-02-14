@@ -7,6 +7,16 @@ import { sampleRoutePoints, fetchOpenMeteoWeather, classifyWind } from '@/lib/we
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    await prisma.weatherData.deleteMany({ where: { routeId: id } });
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: 'Failed to clear weather data' }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;

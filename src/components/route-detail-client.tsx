@@ -19,6 +19,12 @@ import type { WeatherPanelPoint } from '@/components/weather-panel';
 import type { PoiData } from '@/components/map/route-map';
 import type { PoiCategory } from '@/lib/validations/poi';
 
+interface WeatherState {
+  points: WeatherPanelPoint[];
+  startTime: string;
+  averageSpeedKmh: number;
+}
+
 interface RouteDetailClientProps {
   routeId: string;
   distanceMeters: number;
@@ -27,6 +33,7 @@ interface RouteDetailClientProps {
   trackPoints: { latitude: number; longitude: number; elevation?: number | null }[];
   bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number };
   initialPois: PoiData[];
+  initialWeatherData: WeatherState | null;
 }
 
 export default function RouteDetailClient({
@@ -37,6 +44,7 @@ export default function RouteDetailClient({
   trackPoints,
   bounds,
   initialPois,
+  initialWeatherData,
 }: RouteDetailClientProps) {
   const [pois, setPois] = useState<PoiData[]>(initialPois);
   const [isAddingPoi, setIsAddingPoi] = useState(false);
@@ -44,11 +52,7 @@ export default function RouteDetailClient({
   const [editingPoi, setEditingPoi] = useState<PoiData | null>(null);
   const [formOpen, setFormOpen] = useState(false);
 
-  const [weatherData, setWeatherData] = useState<{
-    points: WeatherPanelPoint[];
-    startTime: string;
-    averageSpeedKmh: number;
-  } | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherState | null>(initialWeatherData);
   const [weatherFormOpen, setWeatherFormOpen] = useState(false);
   const [weatherLoading, setWeatherLoading] = useState(false);
 
@@ -139,6 +143,13 @@ export default function RouteDetailClient({
       }
     } finally {
       setWeatherLoading(false);
+    }
+  };
+
+  const handleClearWeather = async () => {
+    const res = await fetch(`/api/routes/${routeId}/weather`, { method: 'DELETE' });
+    if (res.ok) {
+      setWeatherData(null);
     }
   };
 
@@ -242,6 +253,7 @@ export default function RouteDetailClient({
             startTime={weatherData.startTime}
             averageSpeedKmh={weatherData.averageSpeedKmh}
             trackPoints={trackPoints}
+            onClear={handleClearWeather}
           />
         )}
       </div>

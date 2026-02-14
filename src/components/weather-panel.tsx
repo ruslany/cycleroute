@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -45,6 +45,7 @@ interface WeatherPanelProps {
   startTime: string;
   averageSpeedKmh: number;
   trackPoints: { latitude: number; longitude: number; elevation?: number | null }[];
+  onClear?: () => void;
 }
 
 const tempConfig: ChartConfig = {
@@ -92,6 +93,7 @@ export default function WeatherPanel({
   startTime,
   averageSpeedKmh,
   trackPoints,
+  onClear,
 }: WeatherPanelProps) {
   const [expanded, setExpanded] = useState(true);
 
@@ -134,15 +136,26 @@ export default function WeatherPanel({
 
   return (
     <div className="border-t border-border bg-card">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-4 py-2 text-sm font-medium hover:bg-muted/50"
-      >
-        <span>
-          Weather Forecast — {startDate} at {averageSpeedKmh} km/h
-        </span>
-        {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-      </button>
+      <div className="flex items-center justify-between px-4 py-2 text-sm font-medium">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex flex-1 items-center gap-2 hover:text-foreground/80"
+        >
+          {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          <span>
+            Weather Forecast — {startDate} at {averageSpeedKmh} km/h
+          </span>
+        </button>
+        {onClear && (
+          <button
+            onClick={onClear}
+            className="ml-2 rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            title="Clear weather data"
+          >
+            <Trash2 size={14} />
+          </button>
+        )}
+      </div>
       {expanded && (
         <div className="max-h-[40vh] overflow-y-auto px-4 pb-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
