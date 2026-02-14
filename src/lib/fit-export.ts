@@ -109,10 +109,9 @@ export function buildExportFit({ name, trackPoints, coursePoints }: FitExportOpt
   // 1. FILE_ID
   encoder.onMesg(Profile.MesgNum.FILE_ID, {
     type: 'course',
-    manufacturer: 'development',
-    product: 0,
+    manufacturer: 'garmin',
+    product: 'connect',
     timeCreated: startTime,
-    serialNumber: 12345,
   });
 
   // 2. COURSE
