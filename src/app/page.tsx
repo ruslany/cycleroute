@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import GpxUploader from '@/components/GpxUploader';
-import RouteCard from '@/components/RouteCard';
+import GpxUploader from '@/components/gpx-uploader';
+import RouteCard from '@/components/route-card';
 import { ModeToggle } from '@/components/mode-toggle';
 
 export const dynamic = 'force-dynamic';

@@ -3,11 +3,11 @@
 import { useState, useCallback } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import RouteStats from '@/components/RouteStats';
-import PoiList from '@/components/PoiList';
-import PoiForm from '@/components/PoiForm';
-import DynamicMap from '@/components/map/DynamicMap';
-import type { PoiData } from '@/components/map/RouteMap';
+import RouteStats from '@/components/route-stats';
+import PoiList from '@/components/poi-list';
+import PoiForm from '@/components/poi-form';
+import DynamicMap from '@/components/map/dynamic-map';
+import type { PoiData } from '@/components/map/route-map';
 import type { PoiCategory } from '@/lib/validations/poi';
 
 interface RouteDetailClientProps {

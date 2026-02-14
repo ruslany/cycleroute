@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import DeleteRouteButton from '@/components/DeleteRouteButton';
+import DeleteRouteButton from '@/components/delete-route-button';
 
 interface RouteCardProps {
   id: string;
