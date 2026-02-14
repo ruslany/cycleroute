@@ -1,9 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { Download } from 'lucide-react';
+import { ChevronDown, Download } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import DeleteRouteButton from '@/components/delete-route-button';
 
 interface RouteCardProps {
@@ -25,17 +31,30 @@ export default function RouteCard({ id, name, distanceMeters, createdAt }: Route
           <span>{formatDistanceToNow(createdAt, { addSuffix: true })}</span>
         </div>
       </Link>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-muted-foreground hover:text-foreground"
-        asChild
-        onClick={(e) => e.stopPropagation()}
-      >
-        <a href={`/api/routes/${id}/export`} download>
-          <Download className="size-4" />
-        </a>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Download className="size-4" />
+            <ChevronDown className="size-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <a href={`/api/routes/${id}/export`} download>
+              Download GPX
+            </a>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a href={`/api/routes/${id}/export-fit`} download>
+              Download FIT
+            </a>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DeleteRouteButton id={id} name={name} />
     </div>
   );

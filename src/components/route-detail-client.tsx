@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Download, Plus, X } from 'lucide-react';
+import { ChevronDown, Download, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import RouteStats from '@/components/route-stats';
 import PoiList from '@/components/poi-list';
 import PoiForm from '@/components/poi-form';
@@ -121,12 +127,30 @@ export default function RouteDetailClient({
           pointCount={pointCount}
         />
         <div className="mt-4">
-          <Button variant="outline" size="sm" className="w-full" asChild>
-            <a href={`/api/routes/${routeId}/export`} download>
-              <Download size={14} className="mr-2" />
-              Download GPX
-            </a>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="w-full">
+                <Download size={14} className="mr-2" />
+                Download
+                <ChevronDown size={14} className="ml-auto" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-[var(--radix-dropdown-menu-trigger-width)]"
+            >
+              <DropdownMenuItem asChild>
+                <a href={`/api/routes/${routeId}/export`} download>
+                  Download GPX
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href={`/api/routes/${routeId}/export-fit`} download>
+                  Download FIT
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="mt-6">
           <div className="mb-3 flex items-center justify-between">
