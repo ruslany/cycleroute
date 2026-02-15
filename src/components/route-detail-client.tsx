@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { ChevronDown, CloudSun, Download, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,17 +14,8 @@ import RouteStats from '@/components/route-stats';
 import PoiList from '@/components/poi-list';
 import PoiForm from '@/components/poi-form';
 import DynamicMap from '@/components/map/dynamic-map';
-import WeatherForm from '@/components/weather-form';
-import WeatherPanel from '@/components/weather-panel';
-import type { WeatherPanelPoint } from '@/components/weather-panel';
 import type { PoiData } from '@/components/map/route-map';
 import type { PoiCategory } from '@/lib/validations/poi';
-
-interface WeatherState {
-  points: WeatherPanelPoint[];
-  startTime: string;
-  averageSpeedKmh: number;
-}
 
 interface RouteDetailClientProps {
   routeId: string;
@@ -33,7 +25,6 @@ interface RouteDetailClientProps {
   trackPoints: { latitude: number; longitude: number; elevation?: number | null }[];
   bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number };
   initialPois: PoiData[];
-  initialWeatherData: WeatherState | null;
 }
 
 export default function RouteDetailClient({
@@ -44,17 +35,12 @@ export default function RouteDetailClient({
   trackPoints,
   bounds,
   initialPois,
-  initialWeatherData,
 }: RouteDetailClientProps) {
   const [pois, setPois] = useState<PoiData[]>(initialPois);
   const [isAddingPoi, setIsAddingPoi] = useState(false);
   const [pendingLocation, setPendingLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [editingPoi, setEditingPoi] = useState<PoiData | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-
-  const [weatherData, setWeatherData] = useState<WeatherState | null>(initialWeatherData);
-  const [weatherFormOpen, setWeatherFormOpen] = useState(false);
-  const [weatherLoading, setWeatherLoading] = useState(false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     setPendingLocation({ lat, lng });
@@ -125,31 +111,6 @@ export default function RouteDetailClient({
     }
   };
 
-  const handleFetchWeather = async (values: { startTime: string; averageSpeedKmh: number }) => {
-    setWeatherLoading(true);
-    try {
-      const res = await fetch(`/api/routes/${routeId}/weather`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setWeatherData(data);
-        setWeatherFormOpen(false);
-      }
-    } finally {
-      setWeatherLoading(false);
-    }
-  };
-
-  const handleClearWeather = async () => {
-    const res = await fetch(`/api/routes/${routeId}/weather`, { method: 'DELETE' });
-    if (res.ok) {
-      setWeatherData(null);
-    }
-  };
-
   const handleFormOpenChange = (open: boolean) => {
     setFormOpen(open);
     if (!open) {
@@ -193,14 +154,11 @@ export default function RouteDetailClient({
           </DropdownMenu>
         </div>
         <div className="mt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={() => setWeatherFormOpen(true)}
-          >
-            <CloudSun size={14} className="mr-2" />
-            Weather Forecast
+          <Button variant="outline" size="sm" className="w-full" asChild>
+            <Link href={`/routes/${routeId}/weather`}>
+              <CloudSun size={14} className="mr-2" />
+              Weather Forecast
+            </Link>
           </Button>
         </div>
         <div className="mt-6">
@@ -241,26 +199,9 @@ export default function RouteDetailClient({
             pois={pois}
             isAddingPoi={isAddingPoi}
             onMapClick={handleMapClick}
-            windArrows={weatherData?.points}
           />
         </main>
-        {weatherData && (
-          <WeatherPanel
-            points={weatherData.points}
-            startTime={weatherData.startTime}
-            averageSpeedKmh={weatherData.averageSpeedKmh}
-            trackPoints={trackPoints}
-            onClear={handleClearWeather}
-          />
-        )}
       </div>
-
-      <WeatherForm
-        open={weatherFormOpen}
-        onOpenChange={setWeatherFormOpen}
-        onSubmit={handleFetchWeather}
-        isLoading={weatherLoading}
-      />
 
       <PoiForm
         open={formOpen}

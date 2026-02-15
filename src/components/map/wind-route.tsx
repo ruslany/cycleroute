@@ -5,7 +5,7 @@ import 'leaflet-polylinedecorator';
 import { Polyline, Popup, CircleMarker, useMap } from 'react-leaflet';
 import { useEffect, useMemo, useRef } from 'react';
 import { haversineDistance } from '@/lib/gpx';
-import type { WeatherPanelPoint } from '@/components/weather-panel';
+import type { WeatherPanelPoint } from '@/lib/weather';
 
 function windColor(type: string): string {
   switch (type) {
