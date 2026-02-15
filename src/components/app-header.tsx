@@ -16,7 +16,10 @@ import { ModeToggle } from '@/components/mode-toggle';
 export function AppHeader() {
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center border-b border-border bg-card px-2 sm:px-4">
-      <Link href="/" className="mr-2 flex items-center gap-2 text-foreground hover:text-primary sm:mr-4">
+      <Link
+        href="/"
+        className="mr-2 flex items-center gap-2 text-foreground hover:text-primary sm:mr-4"
+      >
         <Bike className="h-5 w-5" />
         <span className="hidden text-lg font-bold sm:inline">CycleRoute</span>
       </Link>
