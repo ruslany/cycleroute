@@ -21,6 +21,17 @@ import {
 } from '@/components/ui/chart';
 import { getWeatherDescription } from '@/lib/weather-codes';
 import type { WindClassification } from '@/lib/weather';
+import { useUnits } from '@/components/units-provider';
+import {
+  formatDistanceRound,
+  formatSpeed,
+  tempUnit,
+  speedUnit,
+  elevationUnit,
+  celsiusToFahrenheit,
+  kmhToMph,
+  metersToFeet,
+} from '@/lib/units';
 
 export interface WeatherPanelPoint {
   latitude: number;
@@ -51,6 +62,8 @@ interface WeatherPanelProps {
 const tempConfig: ChartConfig = {
   tempC: { label: 'Temperature', color: 'var(--chart-1)' },
   feelsLikeC: { label: 'Feels Like', color: 'var(--chart-2)' },
+  tempDisplay: { label: 'Temperature', color: 'var(--chart-1)' },
+  feelsLikeDisplay: { label: 'Feels Like', color: 'var(--chart-2)' },
 };
 
 const precipConfig: ChartConfig = {
@@ -62,6 +75,8 @@ const precipConfig: ChartConfig = {
 const windConfig: ChartConfig = {
   windSpeedKmh: { label: 'Wind Speed', color: 'var(--chart-1)' },
   windGustsKmh: { label: 'Wind Gusts', color: 'var(--chart-2)' },
+  windSpeedDisplay: { label: 'Wind Speed', color: 'var(--chart-1)' },
+  windGustsDisplay: { label: 'Wind Gusts', color: 'var(--chart-2)' },
 };
 
 const elevationConfig: ChartConfig = {
@@ -71,10 +86,6 @@ const elevationConfig: ChartConfig = {
 function formatTime(isoString: string): string {
   const d = new Date(isoString);
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-function formatDistanceKm(meters: number): string {
-  return `${(meters / 1000).toFixed(0)} km`;
 }
 
 function windColorForType(type: string): string {
@@ -96,37 +107,41 @@ export default function WeatherPanel({
   onClear,
 }: WeatherPanelProps) {
   const [expanded, setExpanded] = useState(true);
+  const { imperial } = useUnits();
 
   const chartData = useMemo(
     () =>
       points.map((p) => ({
         ...p,
         time: formatTime(p.estimatedArrivalTime),
-        distKm: formatDistanceKm(p.distanceFromStartM),
+        distKm: formatDistanceRound(p.distanceFromStartM, imperial),
+        tempDisplay: imperial ? celsiusToFahrenheit(p.tempC) : p.tempC,
+        feelsLikeDisplay: imperial ? celsiusToFahrenheit(p.feelsLikeC) : p.feelsLikeC,
+        windSpeedDisplay: imperial ? kmhToMph(p.windSpeedKmh) : p.windSpeedKmh,
+        windGustsDisplay: imperial ? kmhToMph(p.windGustsKmh) : p.windGustsKmh,
         weatherDesc: getWeatherDescription(p.weatherCode).description,
         windColor: windColorForType(p.windClassification.type),
         windType: p.windClassification.type,
       })),
-    [points],
+    [points, imperial],
   );
 
   const elevationData = useMemo(() => {
     if (!trackPoints.length || trackPoints[0].elevation == null) return [];
-    // Sample track elevation to roughly match weather point count
     const step = Math.max(1, Math.floor(trackPoints.length / Math.max(points.length * 3, 20)));
     const data = [];
     for (let i = 0; i < trackPoints.length; i += step) {
       const tp = trackPoints[i];
-      // Estimate distance for this track point index
       const fraction = i / (trackPoints.length - 1);
       const totalDist = points.length > 0 ? points[points.length - 1].distanceFromStartM : 0;
+      const elev = tp.elevation ?? 0;
       data.push({
-        distKm: formatDistanceKm(fraction * totalDist),
-        elevation: tp.elevation ?? 0,
+        distKm: formatDistanceRound(fraction * totalDist, imperial),
+        elevation: imperial ? metersToFeet(elev) : elev,
       });
     }
     return data;
-  }, [trackPoints, points]);
+  }, [trackPoints, points, imperial]);
 
   const startDate = new Date(startTime).toLocaleDateString([], {
     weekday: 'short',
@@ -143,7 +158,7 @@ export default function WeatherPanel({
         >
           {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
           <span>
-            Weather Forecast — {startDate} at {averageSpeedKmh} km/h
+            Weather Forecast — {startDate} at {formatSpeed(averageSpeedKmh, imperial)}
           </span>
         </button>
         {onClear && (
@@ -166,7 +181,7 @@ export default function WeatherPanel({
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} unit="°C" />
+                  <YAxis tick={{ fontSize: 10 }} unit={tempUnit(imperial)} />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent
@@ -180,14 +195,14 @@ export default function WeatherPanel({
                   />
                   <Line
                     type="monotone"
-                    dataKey="tempC"
+                    dataKey="tempDisplay"
                     stroke="var(--color-tempC)"
                     strokeWidth={2}
                     dot={false}
                   />
                   <Line
                     type="monotone"
-                    dataKey="feelsLikeC"
+                    dataKey="feelsLikeDisplay"
                     stroke="var(--color-feelsLikeC)"
                     strokeWidth={2}
                     strokeDasharray="5 5"
@@ -253,7 +268,7 @@ export default function WeatherPanel({
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} unit=" km/h" />
+                  <YAxis tick={{ fontSize: 10 }} unit={speedUnit(imperial)} />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent
@@ -267,7 +282,7 @@ export default function WeatherPanel({
                   />
                   <Line
                     type="monotone"
-                    dataKey="windSpeedKmh"
+                    dataKey="windSpeedDisplay"
                     stroke="var(--color-windSpeedKmh)"
                     strokeWidth={2}
                     dot={(props) => {
@@ -286,7 +301,7 @@ export default function WeatherPanel({
                   />
                   <Line
                     type="monotone"
-                    dataKey="windGustsKmh"
+                    dataKey="windGustsDisplay"
                     stroke="var(--color-windGustsKmh)"
                     strokeWidth={2}
                     strokeDasharray="5 5"
@@ -315,7 +330,7 @@ export default function WeatherPanel({
                   <AreaChart data={elevationData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="distKm" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} unit="m" />
+                    <YAxis tick={{ fontSize: 10 }} unit={elevationUnit(imperial)} />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Area
                       type="monotone"

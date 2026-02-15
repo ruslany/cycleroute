@@ -1,3 +1,8 @@
+'use client';
+
+import { useUnits } from '@/components/units-provider';
+import { formatDistance, formatElevation } from '@/lib/units';
+
 interface RouteStatsProps {
   distanceMeters: number;
   elevationGainM: number | null;
@@ -9,18 +14,18 @@ export default function RouteStats({
   elevationGainM,
   pointCount,
 }: RouteStatsProps) {
-  const distanceKm = (distanceMeters / 1000).toFixed(1);
+  const { imperial } = useUnits();
 
   return (
     <div className="grid grid-cols-3 gap-4">
       <div className="rounded-lg bg-card p-4 shadow">
         <p className="text-sm text-muted-foreground">Distance</p>
-        <p className="text-xl font-semibold">{distanceKm} km</p>
+        <p className="text-xl font-semibold">{formatDistance(distanceMeters, imperial)}</p>
       </div>
       <div className="rounded-lg bg-card p-4 shadow">
         <p className="text-sm text-muted-foreground">Elevation Gain</p>
         <p className="text-xl font-semibold">
-          {elevationGainM !== null ? `${Math.round(elevationGainM)} m` : 'N/A'}
+          {elevationGainM !== null ? formatElevation(elevationGainM, imperial) : 'N/A'}
         </p>
       </div>
       <div className="rounded-lg bg-card p-4 shadow">

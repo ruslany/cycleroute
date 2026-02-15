@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { POI_CATEGORY_CONFIG } from '@/lib/poi-categories';
 import { distanceAlongTrack } from '@/lib/geo';
+import { useUnits } from '@/components/units-provider';
+import { formatDistance } from '@/lib/units';
 import type { PoiCategory } from '@/lib/validations/poi';
 
 const CATEGORY_ICONS = {
@@ -52,6 +54,7 @@ interface PoiListProps {
 }
 
 export default function PoiList({ pois, trackPoints, onEdit, onDelete }: PoiListProps) {
+  const { imperial } = useUnits();
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const poisWithDistance = pois
@@ -82,8 +85,6 @@ export default function PoiList({ pois, trackPoints, onEdit, onDelete }: PoiList
           const category = poi.category as PoiCategory;
           const config = POI_CATEGORY_CONFIG[category] ?? POI_CATEGORY_CONFIG.OTHER;
           const Icon = CATEGORY_ICONS[category] ?? MapPin;
-          const distKm = (poi.distance / 1000).toFixed(1);
-
           return (
             <div key={poi.id} className="flex items-start gap-3 rounded-lg bg-card p-3 shadow-sm">
               <div className="mt-0.5 shrink-0" style={{ color: config.color }}>
@@ -92,7 +93,9 @@ export default function PoiList({ pois, trackPoints, onEdit, onDelete }: PoiList
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-medium text-sm">{poi.name}</span>
-                  <span className="shrink-0 text-xs text-muted-foreground">{distKm} km</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {formatDistance(poi.distance, imperial)}
+                  </span>
                 </div>
                 {poi.description && (
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">{poi.description}</p>
