@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { UnitsProvider } from '@/components/units-provider';
 import 'leaflet/dist/leaflet.css';
 import './globals.css';
 
@@ -28,7 +29,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <UnitsProvider>{children}</UnitsProvider>
         </ThemeProvider>
       </body>
     </html>

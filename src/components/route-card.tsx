@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DeleteRouteButton from '@/components/delete-route-button';
+import { useUnits } from '@/components/units-provider';
+import { formatDistance } from '@/lib/units';
 
 interface RouteCardProps {
   id: string;
@@ -20,14 +22,14 @@ interface RouteCardProps {
 }
 
 export default function RouteCard({ id, name, distanceMeters, createdAt }: RouteCardProps) {
-  const distanceKm = (distanceMeters / 1000).toFixed(1);
+  const { imperial } = useUnits();
 
   return (
     <div className="flex items-center justify-between rounded-lg bg-card p-4 shadow hover:shadow-md transition-shadow">
       <Link href={`/routes/${id}`} className="flex-1">
         <h3 className="font-semibold text-card-foreground">{name}</h3>
         <div className="mt-1 flex gap-4 text-sm text-muted-foreground">
-          <span>{distanceKm} km</span>
+          <span>{formatDistance(distanceMeters, imperial)}</span>
           <span>{formatDistanceToNow(createdAt, { addSuffix: true })}</span>
         </div>
       </Link>

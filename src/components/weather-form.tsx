@@ -16,6 +16,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Label } from '@/components/ui/label';
 import { format } from 'date-fns';
 import { ChevronDownIcon, Loader2 } from 'lucide-react';
+import { useUnits } from '@/components/units-provider';
+import { kmhToMph } from '@/lib/units';
 
 interface WeatherFormProps {
   open: boolean;
@@ -32,9 +34,10 @@ function getDefaultDate(): Date {
 }
 
 export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }: WeatherFormProps) {
+  const { imperial } = useUnits();
   const [date, setDate] = useState<Date | undefined>(getDefaultDate);
   const [time, setTime] = useState('08:00');
-  const [speed, setSpeed] = useState(25);
+  const [speed, setSpeed] = useState(imperial ? Math.round(kmhToMph(25)) : 25);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [maxDate] = useState(() => {
     const d = new Date();
@@ -48,7 +51,8 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
     const [hours, minutes] = time.split(':').map(Number);
     const combined = new Date(date);
     combined.setHours(hours, minutes, 0, 0);
-    onSubmit({ startTime: combined.toISOString(), averageSpeedKmh: speed });
+    const speedKmh = imperial ? speed * 1.60934 : speed;
+    onSubmit({ startTime: combined.toISOString(), averageSpeedKmh: speedKmh });
   };
 
   return (
@@ -102,7 +106,7 @@ export default function WeatherForm({ open, onOpenChange, onSubmit, isLoading }:
             </FieldGroup>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="weather-speed">Average Speed (km/h)</Label>
+            <Label htmlFor="weather-speed">Average Speed ({imperial ? 'mph' : 'km/h'})</Label>
             <Input
               id="weather-speed"
               type="number"
