@@ -215,7 +215,18 @@ export default function WindRoute({ trackPoints, weatherPoints }: WindRouteProps
                 <br />
                 Gusts: {p.windGustsKmh.toFixed(1)} km/h
                 <br />
-                Direction: {p.windDirectionDeg}°
+                Direction: {p.windDirectionDeg}°{' '}
+                <span
+                  style={{
+                    display: 'inline-block',
+                    transform: `rotate(${p.windDirectionDeg}deg)`,
+                    fontSize: '14px',
+                    lineHeight: 1,
+                    verticalAlign: 'middle',
+                  }}
+                >
+                  ↓
+                </span>
               </div>
             </div>
           </Popup>
