@@ -2,6 +2,7 @@
 
 import '@/lib/leaflet-setup';
 import L, { LatLngBoundsExpression, LatLngTuple } from 'leaflet';
+import 'leaflet-polylinedecorator';
 import {
   MapContainer,
   TileLayer,
@@ -30,6 +31,38 @@ function FitBounds({ bounds }: FitBoundsProps) {
       hasFit.current = true;
     }
   }, [map, bounds]);
+  return null;
+}
+
+function ArrowDecorator({ positions }: { positions: LatLngTuple[] }) {
+  const map = useMap();
+  const decoratorRef = useRef<L.PolylineDecorator | null>(null);
+
+  useEffect(() => {
+    if (positions.length < 2) return;
+
+    const polyline = L.polyline(positions);
+    const decorator = L.polylineDecorator(polyline, {
+      patterns: [
+        {
+          offset: '50px',
+          repeat: '150px',
+          symbol: L.Symbol.arrowHead({
+            pixelSize: 9,
+            polygon: false,
+            pathOptions: { stroke: true, color: '#444', weight: 2, opacity: 0.8 },
+          }),
+        },
+      ],
+    }).addTo(map);
+
+    decoratorRef.current = decorator;
+
+    return () => {
+      decorator.remove();
+    };
+  }, [map, positions]);
+
   return null;
 }
 
@@ -148,7 +181,10 @@ export default function RouteMap({
         {windArrows && windArrows.length > 0 ? (
           <WindRoute trackPoints={trackPoints} weatherPoints={windArrows} />
         ) : (
-          <Polyline positions={positions} color="#2563eb" weight={4} />
+          <>
+            <Polyline positions={positions} color="#2563eb" weight={4} />
+            <ArrowDecorator positions={positions} />
+          </>
         )}
         <FitBounds bounds={leafletBounds} />
         <FitRouteControl bounds={leafletBounds} />
