@@ -14,6 +14,8 @@ import {
 import { useEffect, useRef } from 'react';
 import { POI_CATEGORY_CONFIG } from '@/lib/poi-categories';
 import type { PoiCategory } from '@/lib/validations/poi';
+import WindRoute from '@/components/map/wind-route';
+import type { WeatherPanelPoint } from '@/lib/weather';
 
 interface FitBoundsProps {
   bounds: LatLngBoundsExpression;
@@ -113,6 +115,7 @@ interface RouteMapProps {
   isAddingPoi?: boolean;
   onMapClick?: (lat: number, lng: number) => void;
   onPoiClick?: (poi: PoiData) => void;
+  windArrows?: WeatherPanelPoint[];
 }
 
 export default function RouteMap({
@@ -122,6 +125,7 @@ export default function RouteMap({
   isAddingPoi,
   onMapClick,
   onPoiClick,
+  windArrows,
 }: RouteMapProps) {
   const positions: LatLngTuple[] = trackPoints.map((p) => [p.latitude, p.longitude]);
 
@@ -141,7 +145,11 @@ export default function RouteMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Polyline positions={positions} color="#2563eb" weight={4} />
+        {windArrows && windArrows.length > 0 ? (
+          <WindRoute trackPoints={trackPoints} weatherPoints={windArrows} />
+        ) : (
+          <Polyline positions={positions} color="#2563eb" weight={4} />
+        )}
         <FitBounds bounds={leafletBounds} />
         <FitRouteControl bounds={leafletBounds} />
         <InvalidateOnResize />

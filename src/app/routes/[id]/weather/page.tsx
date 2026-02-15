@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { parseGpx } from '@/lib/gpx';
+import { downloadGpx } from '@/lib/blob';
 import { classifyWind } from '@/lib/weather';
 import type { WeatherPanelPoint } from '@/lib/weather';
 import WeatherPageClient from '@/components/weather-page-client';
@@ -13,12 +15,20 @@ export default async function WeatherPage({ params }: WeatherPageProps) {
 
   const route = await prisma.route.findUnique({
     where: { id },
-    select: { id: true, name: true, distanceMeters: true },
+    select: { id: true, name: true, distanceMeters: true, gpxBlobUrl: true },
   });
 
   if (!route) {
     notFound();
   }
+
+  const gpxData = await downloadGpx(route.gpxBlobUrl);
+  const gpxResult = parseGpx(gpxData);
+
+  const trackPoints = gpxResult.trackPoints.map((p) => ({
+    latitude: p.latitude,
+    longitude: p.longitude,
+  }));
 
   const weatherRows = await prisma.weatherData.findMany({
     where: { routeId: id },
@@ -67,6 +77,8 @@ export default async function WeatherPage({ params }: WeatherPageProps) {
       routeId={route.id}
       routeName={route.name}
       distanceMeters={route.distanceMeters}
+      trackPoints={trackPoints}
+      bounds={gpxResult.bounds}
       initialWeatherData={initialWeatherData}
     />
   );

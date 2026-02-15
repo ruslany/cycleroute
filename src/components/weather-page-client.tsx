@@ -3,7 +3,17 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { CloudOff, CloudSun, RefreshCw, Trash2 } from 'lucide-react';
-import { LineChart, Line, ComposedChart, Bar, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
@@ -20,6 +30,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import DynamicMap from '@/components/map/dynamic-map';
 import WeatherForm from '@/components/weather-form';
 import { getWeatherDescription } from '@/lib/weather-codes';
 import type { WeatherPanelPoint } from '@/lib/weather';
@@ -45,6 +56,8 @@ interface WeatherPageClientProps {
   routeId: string;
   routeName: string;
   distanceMeters: number;
+  trackPoints: { latitude: number; longitude: number }[];
+  bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number };
   initialWeatherData: WeatherState | null;
 }
 
@@ -58,6 +71,9 @@ const tempConfig: ChartConfig = {
 const precipConfig: ChartConfig = {
   precipMm: { label: 'Precipitation (mm)', color: 'var(--chart-3)' },
   precipProbability: { label: 'Precip. Probability (%)', color: 'var(--chart-4)' },
+};
+
+const cloudConfig: ChartConfig = {
   cloudCoverPercent: { label: 'Cloud Cover (%)', color: 'var(--chart-5)' },
 };
 
@@ -104,6 +120,8 @@ export default function WeatherPageClient({
   routeId,
   routeName,
   distanceMeters,
+  trackPoints,
+  bounds,
   initialWeatherData,
 }: WeatherPageClientProps) {
   const [weatherData, setWeatherData] = useState<WeatherState | null>(initialWeatherData);
@@ -242,6 +260,16 @@ export default function WeatherPageClient({
               </CardContent>
             </Card>
 
+            <div className="mt-6 overflow-hidden rounded-lg border border-border">
+              <div className="h-[250px]">
+                <DynamicMap
+                  trackPoints={trackPoints}
+                  bounds={bounds}
+                  windArrows={weatherData.points}
+                />
+              </div>
+            </div>
+
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Temperature Chart */}
               <div>
@@ -278,55 +306,6 @@ export default function WeatherPageClient({
                       dot={false}
                     />
                   </LineChart>
-                </ChartContainer>
-              </div>
-
-              {/* Precipitation & Cloud Cover Chart */}
-              <div>
-                <h4 className="mb-2 text-sm font-semibold text-muted-foreground">
-                  Precipitation & Cloud Cover
-                </h4>
-                <ChartContainer config={precipConfig} className="aspect-[2/1] w-full">
-                  <ComposedChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                    <YAxis yAxisId="left" tick={{ fontSize: 10 }} unit="mm" />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} unit="%" />
-                    <ChartTooltip
-                      content={
-                        <ChartTooltipContent
-                          labelFormatter={(_, payload) => {
-                            if (!payload?.[0]?.payload) return '';
-                            const d = payload[0].payload;
-                            return `${d.time} · ${d.distKm}`;
-                          }}
-                        />
-                      }
-                    />
-                    <Bar
-                      yAxisId="left"
-                      dataKey="precipMm"
-                      fill="var(--color-precipMm)"
-                      opacity={0.7}
-                      radius={[2, 2, 0, 0]}
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="precipProbability"
-                      stroke="var(--color-precipProbability)"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                    <Area
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="cloudCoverPercent"
-                      fill="var(--color-cloudCoverPercent)"
-                      stroke="var(--color-cloudCoverPercent)"
-                      fillOpacity={0.15}
-                    />
-                  </ComposedChart>
                 </ChartContainer>
               </div>
 
@@ -389,6 +368,75 @@ export default function WeatherPageClient({
                     <span className="inline-block h-2 w-2 rounded-full bg-[#eab308]" /> Crosswind
                   </span>
                 </div>
+              </div>
+
+              {/* Cloud Cover Chart */}
+              <div>
+                <h4 className="mb-2 text-sm font-semibold text-muted-foreground">Cloud Cover</h4>
+                <ChartContainer config={cloudConfig} className="aspect-[2/1] w-full">
+                  <AreaChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} unit="%" domain={[0, 100]} />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          labelFormatter={(_, payload) => {
+                            if (!payload?.[0]?.payload) return '';
+                            const d = payload[0].payload;
+                            return `${d.time} · ${d.distKm}`;
+                          }}
+                        />
+                      }
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="cloudCoverPercent"
+                      fill="var(--color-cloudCoverPercent)"
+                      stroke="var(--color-cloudCoverPercent)"
+                      fillOpacity={0.2}
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              </div>
+
+              {/* Precipitation Chart */}
+              <div>
+                <h4 className="mb-2 text-sm font-semibold text-muted-foreground">Precipitation</h4>
+                <ChartContainer config={precipConfig} className="aspect-[2/1] w-full">
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                    <YAxis yAxisId="left" tick={{ fontSize: 10 }} unit="mm" />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} unit="%" />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          labelFormatter={(_, payload) => {
+                            if (!payload?.[0]?.payload) return '';
+                            const d = payload[0].payload;
+                            return `${d.time} · ${d.distKm}`;
+                          }}
+                        />
+                      }
+                    />
+                    <Bar
+                      yAxisId="left"
+                      dataKey="precipMm"
+                      fill="var(--color-precipMm)"
+                      opacity={0.7}
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="precipProbability"
+                      stroke="var(--color-precipProbability)"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </BarChart>
+                </ChartContainer>
               </div>
             </div>
           </>
