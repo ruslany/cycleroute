@@ -261,7 +261,7 @@ export default function WeatherPageClient({
             </Card>
 
             <div className="mt-6 overflow-hidden rounded-lg border border-border">
-              <div className="h-[250px]">
+              <div className="h-[350px]">
                 <DynamicMap
                   trackPoints={trackPoints}
                   bounds={bounds}

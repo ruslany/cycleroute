@@ -120,8 +120,8 @@ export default function RouteDetailClient({
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-muted p-4">
+    <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
+      <aside className="order-2 shrink-0 overflow-y-auto border-t border-border bg-muted p-4 md:order-1 md:w-80 md:border-r md:border-t-0">
         <RouteStats
           distanceMeters={distanceMeters}
           elevationGainM={elevationGainM}
@@ -191,16 +191,14 @@ export default function RouteDetailClient({
           />
         </div>
       </aside>
-      <div className="flex flex-1 flex-col">
-        <main className="min-h-0 flex-1">
-          <DynamicMap
-            trackPoints={trackPoints}
-            bounds={bounds}
-            pois={pois}
-            isAddingPoi={isAddingPoi}
-            onMapClick={handleMapClick}
-          />
-        </main>
+      <div className="order-1 min-h-[50dvh] flex-1 md:order-2 md:min-h-0">
+        <DynamicMap
+          trackPoints={trackPoints}
+          bounds={bounds}
+          pois={pois}
+          isAddingPoi={isAddingPoi}
+          onMapClick={handleMapClick}
+        />
       </div>
 
       <PoiForm

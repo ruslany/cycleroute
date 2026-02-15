@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import GpxUploader from '@/components/gpx-uploader';
 import RouteCard from '@/components/route-card';
-import { ModeToggle } from '@/components/mode-toggle';
-import { UnitsToggle } from '@/components/units-toggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,12 +19,8 @@ export default async function Home() {
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-foreground">CycleRoute Planner</h1>
-          <div className="flex items-center gap-2">
-            <UnitsToggle />
-            <ModeToggle />
-            <GpxUploader />
-          </div>
+          <h1 className="text-3xl font-bold text-foreground">My Routes</h1>
+          <GpxUploader />
         </div>
 
         <div className="mt-8 space-y-4">

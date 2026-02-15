@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 
 interface RouteHeaderProps {
@@ -31,9 +30,6 @@ export default function RouteHeader({ routeId, initialName }: RouteHeaderProps) 
 
   return (
     <div className="flex items-center gap-4">
-      <Link href="/" className="text-primary hover:text-primary/80">
-        &larr; Back
-      </Link>
       {editing ? (
         <div className="flex items-center gap-2">
           <input
