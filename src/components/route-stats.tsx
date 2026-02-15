@@ -17,7 +17,7 @@ export default function RouteStats({
   const { imperial } = useUnits();
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-2 md:gap-4">
       <div className="rounded-lg bg-card p-4 shadow">
         <p className="text-sm text-muted-foreground">Distance</p>
         <p className="text-xl font-semibold">{formatDistance(distanceMeters, imperial)}</p>

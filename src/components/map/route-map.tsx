@@ -15,7 +15,7 @@ import { useEffect, useRef } from 'react';
 import { POI_CATEGORY_CONFIG } from '@/lib/poi-categories';
 import type { PoiCategory } from '@/lib/validations/poi';
 import WindRoute from '@/components/map/wind-route';
-import type { WeatherPanelPoint } from '@/components/weather-panel';
+import type { WeatherPanelPoint } from '@/lib/weather';
 
 interface FitBoundsProps {
   bounds: LatLngBoundsExpression;

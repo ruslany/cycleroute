@@ -24,6 +24,24 @@ export interface WeatherPoint extends SamplePoint {
   windClassification: WindClassification;
 }
 
+export interface WeatherPanelPoint {
+  latitude: number;
+  longitude: number;
+  distanceFromStartM: number;
+  estimatedArrivalTime: string;
+  travelDirectionDeg: number;
+  tempC: number;
+  feelsLikeC: number;
+  precipProbability: number;
+  precipMm: number;
+  windSpeedKmh: number;
+  windGustsKmh: number;
+  windDirectionDeg: number;
+  cloudCoverPercent: number;
+  weatherCode: number;
+  windClassification: WindClassification;
+}
+
 export type WindType = 'headwind' | 'tailwind' | 'crosswind-left' | 'crosswind-right';
 
 export interface WindClassification {
